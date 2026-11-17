@@ -1,0 +1,6 @@
+{
+  "name": "Finance Insight",
+  "description": "Personal Financial Management & Business Intelligence application for tracking transactions, accounts, savings goals, and adaptive financial analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
