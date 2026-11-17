@@ -1,0 +1,2937 @@
+# MASTER PROMPT — FINANCE INSIGHT
+
+Saya ingin kamu membangun aplikasi web **utuh, benar-benar interaktif, runnable, dan usable** bernama:
+
+# Finance Insight
+
+**Subjudul:**
+Personal Financial Management & Business Intelligence
+
+Aplikasi ini merupakan aplikasi **Manajemen Keuangan Pribadi berbasis Business Intelligence** dengan pendekatan **mobile-first**, menggunakan **React JS**.
+
+Aplikasi harus terasa seperti produk financial management sungguhan, bukan sekadar mockup, halaman statis, atau contoh desain.
+
+---
+
+# 1. ATURAN PALING PENTING
+
+Anggap seluruh prompt ini sebagai **SATU PEKERJAAN UTUH**.
+
+Jangan hanya membuat sebagian fitur.
+
+Jangan berhenti setelah membuat dashboard dasar.
+
+Jangan membuat mockup yang tombolnya tidak berfungsi.
+
+Jangan memberikan implementasi setengah jadi.
+
+Jangan meminta saya mengatakan "lanjut".
+
+Jangan bertanya "lanjut?".
+
+Jangan meminta konfirmasi untuk mengerjakan fitur berikutnya.
+
+Kerjakan seluruh requirement sampai aplikasi selesai dan dapat digunakan.
+
+Jika ada detail kecil yang belum ditentukan, ambil keputusan teknis yang paling masuk akal, sederhana, aman, konsisten, dan cocok untuk React JS.
+
+Prioritaskan aplikasi yang benar-benar dapat dijalankan daripada penjelasan panjang.
+
+---
+
+# 2. TARGET PLATFORM
+
+Aplikasi akan dibuat dan dijalankan di:
+
+**Google AI Studio**
+
+Karena target utama adalah React JS, gunakan arsitektur frontend modern yang dapat langsung dijalankan dalam environment web.
+
+Gunakan:
+
+- React JS
+- JavaScript
+- HTML
+- CSS
+- Tailwind CSS
+- Lucide React Icons
+- Recharts
+- SheetJS / XLSX
+- localStorage dan/atau IndexedDB untuk persistence
+- React state management sederhana seperti Context API/useReducer jika diperlukan
+
+Jangan menggunakan:
+
+- Laravel
+- PHP
+- MySQL
+- XAMPP
+- Blade
+- Vue
+- Angular
+- Express
+- Node.js sebagai backend
+- framework backend lain
+
+Aplikasi harus tetap dapat berjalan sebagai aplikasi React frontend.
+
+---
+
+# 3. ARSITEKTUR DATA
+
+Karena aplikasi ini menggunakan React JS tanpa backend/database server, gunakan pendekatan:
+
+**Local-first architecture**
+
+Data disimpan secara lokal menggunakan:
+
+- localStorage untuk data sederhana
+- IndexedDB jika diperlukan untuk data yang lebih besar
+
+Jangan berpura-pura bahwa data tersimpan di MySQL.
+
+Buat data layer/service terpisah agar nantinya mudah diganti dengan REST API/backend apabila aplikasi dikembangkan ke production.
+
+Contoh struktur:
+
+```text
+src/
+├── components/
+├── pages/
+├── services/
+├── utils/
+├── hooks/
+├── context/
+├── data/
+├── App.jsx
+└── main.jsx
+```
+
+Jika Google AI Studio menggunakan struktur berbeda, sesuaikan tanpa menghilangkan arsitektur logis tersebut.
+
+---
+
+# 4. NAMA APLIKASI
+
+Nama:
+
+**Finance Insight**
+
+Subjudul:
+
+**Personal Financial Management & Business Intelligence**
+
+Brand harus terlihat profesional dan modern.
+
+---
+
+# 5. TUJUAN APLIKASI
+
+Aplikasi harus memungkinkan user:
+
+1. Mengelola transaksi
+2. Melihat dashboard keuangan
+3. Mengelola akun Cash
+4. Mengelola akun Bank
+5. Mengelola akun E-Wallet
+6. Mengelola target tabungan
+7. Melihat analisis Business Intelligence
+8. Melihat adaptive financial insights
+9. Melihat optimasi keuangan
+10. Melihat prediksi keuangan
+11. Import Excel
+12. Import CSV
+13. Export data
+14. Filter berdasarkan periode
+15. Search transaksi
+16. Edit transaksi
+17. Hapus transaksi
+18. Melihat detail transaksi
+19. Menggunakan Gemini AI untuk analisis/prediksi jika API key tersedia
+20. Menggunakan aplikasi dengan nyaman di desktop maupun mobile
+
+---
+
+# 6. DATA AWAL
+
+Gunakan data awal berikut sebagai seed/demo data.
+
+Jangan mengubah nilai datanya.
+
+```javascript
+const INITIAL_TRANSACTIONS = [
+  {
+    id: 1,
+    tanggal: '2026-10-01',
+    tipe: 'Pemasukan',
+    kategori: 'uang harian',
+    metode: 'transfer',
+    masuk: 2055000,
+    keluar: 0,
+    keterangan: 'Uang bulanan'
+  },
+  {
+    id: 2,
+    tanggal: '2026-10-02',
+    tipe: 'Pengeluaran',
+    kategori: 'uang kuliah',
+    metode: 'transfer',
+    masuk: 0,
+    keluar: 705000,
+    keterangan: 'Semesteran'
+  },
+  {
+    id: 3,
+    tanggal: '2026-10-05',
+    tipe: 'Pengeluaran',
+    kategori: 'listrik',
+    metode: 'transfer',
+    masuk: 0,
+    keluar: 299500,
+    keterangan: 'Token listrik'
+  },
+  {
+    id: 4,
+    tanggal: '2026-10-08',
+    tipe: 'Pengeluaran',
+    kategori: 'bensin',
+    metode: 'cash',
+    masuk: 0,
+    keluar: 146000,
+    keterangan: 'Isi full tank'
+  },
+  {
+    id: 5,
+    tanggal: '2026-10-10',
+    tipe: 'Pengeluaran',
+    kategori: 'kuota internet',
+    metode: 'qris',
+    masuk: 0,
+    keluar: 109000,
+    keterangan: 'Paket bulanan'
+  },
+  {
+    id: 6,
+    tanggal: '2026-10-12',
+    tipe: 'Pengeluaran',
+    kategori: 'makan',
+    metode: 'qris',
+    masuk: 0,
+    keluar: 186000,
+    keterangan: 'Makan siang & malam'
+  },
+  {
+    id: 7,
+    tanggal: '2026-10-15',
+    tipe: 'Pengeluaran',
+    kategori: 'jajan',
+    metode: 'cash',
+    masuk: 0,
+    keluar: 91000,
+    keterangan: 'Cemilan'
+  },
+  {
+    id: 8,
+    tanggal: '2026-10-18',
+    tipe: 'Pengeluaran',
+    kategori: 'makanan kucing',
+    metode: 'qris',
+    masuk: 0,
+    keluar: 83000,
+    keterangan: 'Whiskas'
+  },
+  {
+    id: 9,
+    tanggal: '2026-10-20',
+    tipe: 'Pengeluaran',
+    kategori: 'air minum',
+    metode: 'cash',
+    masuk: 0,
+    keluar: 43000,
+    keterangan: 'Galon'
+  },
+  {
+    id: 10,
+    tanggal: '2026-10-22',
+    tipe: 'Pengeluaran',
+    kategori: 'gorengan',
+    metode: 'cash',
+    masuk: 0,
+    keluar: 25000,
+    keterangan: 'Gorengan sore'
+  },
+  {
+    id: 11,
+    tanggal: '2026-10-25',
+    tipe: 'Pengeluaran',
+    kategori: 'kopi',
+    metode: 'qris',
+    masuk: 0,
+    keluar: 15000,
+    keterangan: 'Es Kopi'
+  },
+  {
+    id: 12,
+    tanggal: '2026-10-28',
+    tipe: 'Pengeluaran',
+    kategori: 'tabungan',
+    metode: 'transfer',
+    masuk: 0,
+    keluar: 20000,
+    keterangan: 'Simpanan'
+  }
+];
+```
+
+Gunakan data tersebut sebagai data demo awal.
+
+Data harus dapat diubah user.
+
+Jangan hard-code angka dashboard.
+
+Dashboard harus menghitung angka dari state/data aktual.
+
+---
+
+# 7. DATA TRANSAKSI
+
+Setiap transaksi minimal memiliki:
+
+```text
+id
+tanggal
+tipe
+kategori
+metode
+akun
+masuk
+keluar
+keterangan
+jenisPengeluaran
+```
+
+Jenis pengeluaran:
+
+```text
+Kebutuhan
+Keinginan
+Tidak Berlaku
+```
+
+Untuk pemasukan:
+
+```text
+Tidak Berlaku
+```
+
+Kategori minimal:
+
+```text
+uang harian
+uang kuliah
+listrik
+bensin
+kuota internet
+makan
+jajan
+makanan kucing
+air minum
+gorengan
+kopi
+tabungan
+Pemasukan
+Lainnya
+```
+
+Jangan membatasi sistem hanya kepada kategori tersebut.
+
+User harus dapat menambahkan kategori baru.
+
+---
+
+# 8. MULTI-USER
+
+Karena tidak menggunakan backend, buat sistem user lokal sederhana.
+
+Fitur:
+
+- Register
+- Login
+- Logout
+- Session lokal
+- Profile
+- Data terisolasi berdasarkan user
+
+Gunakan localStorage dengan struktur yang aman dan konsisten.
+
+Contoh:
+
+```text
+users
+currentUser
+transactionsByUser
+accountsByUser
+savingsGoalsByUser
+```
+
+User A tidak boleh melihat data User B melalui UI maupun fungsi aplikasi.
+
+Jangan mengambil `userId` dari input yang bisa dimanipulasi secara sembarangan.
+
+Gunakan current authenticated user dari application state.
+
+Tambahkan demo account jika diperlukan.
+
+---
+
+# 9. LOGIN
+
+Halaman login:
+
+```text
+Finance Insight
+
+Email
+Password
+
+[Login]
+
+Belum punya akun?
+Register
+```
+
+Validasi:
+
+- email wajib
+- password wajib
+- user harus terdaftar
+
+Setelah login:
+
+```text
+/dashboard
+```
+
+---
+
+# 10. REGISTER
+
+Form:
+
+```text
+Nama
+Email
+Password
+Konfirmasi Password
+```
+
+Validasi:
+
+- nama wajib
+- email valid
+- email tidak boleh duplikat
+- password minimal 6 karakter
+- password dan konfirmasi harus sama
+
+Untuk demo local-only, jangan menyimpan password secara plaintext jika dapat dihindari.
+
+Gunakan Web Crypto API untuk hashing sederhana apabila memungkinkan.
+
+Jelaskan bahwa autentikasi local-only bukan pengganti authentication backend production.
+
+---
+
+# 11. DASHBOARD UTAMA
+
+Dashboard harus menjadi halaman utama setelah login.
+
+Dashboard harus terlihat seperti aplikasi finance sungguhan.
+
+Layout:
+
+```text
+Sidebar / Bottom Navigation
+Header
+Filter periode
+KPI
+Charts
+Insights
+Savings
+Optimization
+Prediction
+Recent Transactions
+```
+
+---
+
+# 12. FILTER PERIODE
+
+Sediakan dropdown:
+
+```text
+Semua Periode
+September 2026
+Oktober 2026
+November 2026
+```
+
+Filter harus memengaruhi:
+
+- KPI
+- grafik
+- insight
+- kebutuhan vs keinginan
+- metode pembayaran
+- tren
+- optimasi
+- analisis
+- transaksi terbaru
+- target jika relevan
+
+Jangan membuat filter yang hanya mengubah satu chart.
+
+---
+
+# 13. KPI CARDS
+
+Minimal:
+
+### Uang Masuk
+
+Total pemasukan periode.
+
+### Uang Keluar
+
+Total pengeluaran periode.
+
+### Sisa Saldo
+
+```text
+total masuk - total keluar
+```
+
+Tambahkan juga:
+
+- Saldo Cash
+- Saldo Digital
+- Total Tabungan
+- Target Tabungan
+- Jumlah Transaksi
+
+Gunakan card modern.
+
+---
+
+# 14. FORMAT ANGKA
+
+Ini WAJIB.
+
+Jangan gunakan separator ribuan.
+
+Salah:
+
+```text
+1.000.000
+```
+
+Salah:
+
+```text
+1,000,000
+```
+
+Benar:
+
+```text
+1000000
+```
+
+Contoh:
+
+```text
+Rp 1000000
+```
+
+Bukan:
+
+```text
+Rp 1.000.000
+```
+
+Aturan ini berlaku untuk:
+
+- KPI
+- tabel
+- chart
+- tooltip
+- insight
+- prediksi
+- optimasi
+- target
+- saldo
+- transaksi
+
+Buat utility function:
+
+```javascript
+formatMoney(value)
+```
+
+yang menghasilkan angka tanpa separator ribuan.
+
+---
+
+# 15. TREN KEUANGAN
+
+Gunakan:
+
+**Recharts AreaChart**
+
+Satu grafik berisi:
+
+- pemasukan
+- pengeluaran
+- saldo
+
+Berdasarkan tanggal.
+
+Jangan membuat grafik terpisah untuk pemasukan dan pengeluaran.
+
+Data chart harus berasal dari state transaksi.
+
+Tidak boleh hard-code.
+
+---
+
+# 16. PENGELUARAN PER KATEGORI
+
+Gunakan:
+
+**Horizontal Bar Chart**
+
+Urutkan dari:
+
+```text
+terbesar → terkecil
+```
+
+Contoh:
+
+```text
+uang kuliah
+listrik
+bensin
+makan
+kuota internet
+...
+```
+
+Nilai berdasarkan pengeluaran aktual.
+
+---
+
+# 17. PROPORSI METODE PEMBAYARAN
+
+Gunakan:
+
+**Donut Chart**
+
+Metode:
+
+```text
+cash
+transfer
+qris
+bank
+e-wallet
+```
+
+Jika metode baru muncul dari data, sistem harus dapat menampilkannya.
+
+---
+
+# 18. AKTIVITAS UANG
+
+Gunakan:
+
+**Vertical Bar Chart**
+
+Bandingkan:
+
+```text
+Masuk
+Keluar
+Sisa
+```
+
+Berdasarkan periode yang dipilih.
+
+---
+
+# 19. KEBUTUHAN VS KEINGINAN
+
+Gunakan:
+
+**Donut Chart**
+
+Hitung:
+
+```text
+kebutuhan / total pengeluaran × 100
+```
+
+dan:
+
+```text
+keinginan / total pengeluaran × 100
+```
+
+Jika tidak ada pengeluaran:
+
+```text
+0%
+```
+
+Jangan sampai division by zero.
+
+---
+
+# 20. CASH VS DIGITAL
+
+Buat visualisasi:
+
+```text
+Cash
+Bank
+E-Wallet
+Total Digital
+Total Saldo
+```
+
+Digital:
+
+```text
+Bank + E-Wallet
+```
+
+Contoh:
+
+```text
+Cash = 200000
+Bank = 500000
+DANA = 150000
+OVO = 100000
+
+Digital = 750000
+Total = 950000
+```
+
+Data harus berasal dari akun/transaksi aktual.
+
+---
+
+# 21. ACCOUNT MANAGEMENT
+
+Buat halaman:
+
+**Akun**
+
+Jenis:
+
+```text
+Cash
+Bank
+E-Wallet
+```
+
+User dapat:
+
+- tambah akun
+- edit akun
+- hapus akun
+- melihat saldo
+- melihat transaksi akun
+
+Contoh:
+
+```text
+Cash
+BCA
+DANA
+OVO
+```
+
+Saldo harus konsisten dengan transaksi.
+
+---
+
+# 22. TARGET TABUNGAN
+
+Default:
+
+```text
+300000 per bulan
+```
+
+Buat target:
+
+```text
+September 2026
+Oktober 2026
+November 2026
+```
+
+Setiap target:
+
+```text
+nama
+target nominal
+nominal terkumpul
+target tanggal
+status
+```
+
+Dashboard:
+
+```text
+Target Tabungan
+300000 / 300000
+
+100% tercapai
+```
+
+Gunakan progress bar.
+
+Rumus:
+
+```text
+persentase =
+(nominal terkumpul / target nominal) × 100
+```
+
+Batasi maksimum 100%.
+
+Jika target 0, tangani dengan benar.
+
+---
+
+# 23. CRUD TRANSAKSI
+
+Buat halaman:
+
+**Transaksi**
+
+Fitur:
+
+- lihat
+- tambah
+- edit
+- hapus
+- search
+- filter
+- sort
+- pagination
+
+Kolom:
+
+```text
+Tanggal
+Keterangan
+Kategori
+Jenis
+Metode
+Akun
+Pemasukan
+Pengeluaran
+Saldo
+Aksi
+```
+
+---
+
+# 24. FORM TRANSAKSI
+
+Field:
+
+```text
+Tanggal
+Keterangan
+Kategori
+Jenis Pengeluaran
+Metode Pembayaran
+Akun
+Pemasukan
+Pengeluaran
+```
+
+Validasi:
+
+- tanggal wajib
+- keterangan wajib
+- kategori wajib
+- akun wajib
+- nominal tidak negatif
+- minimal pemasukan atau pengeluaran harus lebih dari 0
+- transaksi pemasukan menggunakan jenis "Tidak Berlaku"
+
+---
+
+# 25. EDIT TRANSAKSI
+
+User dapat mengubah transaksi miliknya.
+
+Saat transaksi berubah:
+
+- KPI berubah
+- chart berubah
+- saldo berubah
+- insight berubah
+- prediction berubah
+- optimization berubah
+
+Tidak boleh menggunakan nilai statis.
+
+---
+
+# 26. HAPUS TRANSAKSI
+
+Saat transaksi dihapus:
+
+- data hilang dari state
+- localStorage diperbarui
+- dashboard diperbarui
+- chart diperbarui
+
+Berikan confirmation dialog.
+
+---
+
+# 27. DETAIL TRANSAKSI
+
+Dashboard memiliki:
+
+**Lihat Semua Transaksi**
+
+Buat halaman detail transaksi.
+
+Fitur:
+
+```text
+Search
+Filter bulan
+Filter kategori
+Filter jenis
+Filter metode
+Filter akun
+Sort tanggal
+Pagination
+```
+
+Gunakan horizontal scroll pada mobile jika tabel terlalu lebar.
+
+---
+
+# 28. IMPORT EXCEL / CSV
+
+WAJIB.
+
+Gunakan:
+
+**SheetJS / XLSX**
+
+Tombol:
+
+```text
+Import Excel
+```
+
+Format:
+
+```text
+.xlsx
+.csv
+```
+
+Saat upload:
+
+1. Baca file
+2. Parse spreadsheet
+3. Normalisasi header
+4. Abaikan baris `TOTAL`
+5. Bersihkan format mata uang
+6. Konversi nominal menjadi number
+7. Validasi
+8. Tampilkan preview
+9. Beri tahu data invalid
+10. User mengonfirmasi import
+11. Masukkan data valid
+12. Simpan ke local storage
+
+Contoh string:
+
+```text
+Rp 1.000.000
+```
+
+harus menjadi:
+
+```text
+1000000
+```
+
+Contoh:
+
+```text
+1,000,000
+```
+
+menjadi:
+
+```text
+1000000
+```
+
+Contoh:
+
+```text
+1.000.000
+```
+
+menjadi:
+
+```text
+1000000
+```
+
+Jangan menganggap titik/koma sebagai bagian dari nilai setelah proses normalisasi.
+
+Baris:
+
+```text
+TOTAL
+Total
+total
+```
+
+harus diabaikan.
+
+---
+
+# 29. EXPORT DATA
+
+Tambahkan:
+
+```text
+Export CSV
+Export Excel
+```
+
+Gunakan SheetJS untuk Excel.
+
+Data export hanya berasal dari user aktif.
+
+Export harus mengikuti filter yang sedang dipilih jika masuk akal.
+
+---
+
+# 30. BUSINESS INTELLIGENCE
+
+Aplikasi tidak boleh hanya CRUD.
+
+Harus mempunyai:
+
+## Adaptive Financial Analysis
+
+Analisis berdasarkan kondisi aktual.
+
+Contoh:
+
+Jika kategori terbesar:
+
+> Pengeluaran terbesar berasal dari kategori Makan.
+
+Jika pengeluaran meningkat:
+
+> Pengeluaran meningkat dibandingkan periode sebelumnya.
+
+Jika kebutuhan dominan:
+
+> Pengeluaran kebutuhan masih mendominasi pengeluaran periode ini.
+
+Jika keinginan > 30%:
+
+> Proporsi pengeluaran keinginan cukup tinggi dan dapat dikurangi untuk meningkatkan ruang tabungan.
+
+Jika tabungan belum mencapai target:
+
+> Pencapaian tabungan masih berada di bawah target.
+
+Jangan menampilkan insight yang tidak sesuai data.
+
+---
+
+# 31. INSIGHT DINAMIS
+
+Buat sistem rule-based yang menghasilkan insight berdasarkan:
+
+- kategori terbesar
+- persentase kebutuhan
+- persentase keinginan
+- perubahan pemasukan
+- perubahan pengeluaran
+- saldo
+- target tabungan
+- metode pembayaran
+- pola transaksi
+
+Insight harus berubah mengikuti data.
+
+Jangan hard-code satu kalimat untuk semua kondisi.
+
+---
+
+# 32. OPTIMASI KEUANGAN
+
+Buat halaman:
+
+**Optimasi**
+
+Tujuan:
+
+membantu user mencapai target tabungan.
+
+Gunakan:
+
+```text
+pemasukan
+pengeluaran
+target tabungan
+saldo
+jumlah hari
+rata-rata pengeluaran
+```
+
+Contoh:
+
+```text
+Pemasukan = 800000
+Target tabungan = 300000
+Batas pengeluaran = 500000
+Pengeluaran aktual = 450000
+Sisa batas = 50000
+```
+
+Tampilkan:
+
+```text
+Batas Pengeluaran Tersisa
+Rp 50000
+```
+
+Jika sudah melewati:
+
+```text
+Pengeluaran telah melewati batas rekomendasi.
+```
+
+Buat rekomendasi yang adaptif.
+
+---
+
+# 33. PREDIKSI KEUANGAN
+
+Buat halaman:
+
+**Prediksi**
+
+Gunakan metode:
+
+**Moving Average 3 Bulan**
+
+Contoh:
+
+```text
+September = 500000
+Oktober = 400000
+November = 450000
+```
+
+Prediksi:
+
+```text
+(500000 + 400000 + 450000) / 3
+= 450000
+```
+
+Prediksi:
+
+- pemasukan bulan berikutnya
+- pengeluaran bulan berikutnya
+- saldo bulan berikutnya
+- estimasi tabungan
+
+Jika data kurang dari 3 bulan:
+
+```text
+Prediksi belum tersedia.
+
+Dibutuhkan minimal 3 periode data historis.
+```
+
+Jangan membuat angka palsu.
+
+Tampilkan keterangan:
+
+> Prediksi berdasarkan rata-rata historis 3 bulan.
+
+---
+
+# 34. GEMINI AI
+
+Tambahkan fitur:
+
+**Tanya AI: Prediksi & Optimasi**
+
+Buat tombol:
+
+```text
+Tanya AI
+```
+
+Buat modal/form API Key.
+
+Field:
+
+```text
+Gemini API Key
+```
+
+Simpan API key di:
+
+```text
+localStorage
+```
+
+Hanya untuk penggunaan lokal/demo.
+
+Jangan menampilkan API key secara terbuka di UI setelah disimpan.
+
+Berikan opsi:
+
+```text
+Simpan API Key
+Hapus API Key
+```
+
+---
+
+# 35. GEMINI PROMPT
+
+Saat user menekan:
+
+**Tanya AI: Prediksi & Optimasi**
+
+Kirim ringkasan data ke Gemini.
+
+Jangan mengirim seluruh data sensitif yang tidak diperlukan.
+
+Kirim data agregat seperti:
+
+```text
+periode
+total pemasukan
+total pengeluaran
+saldo
+kategori pengeluaran
+kebutuhan
+keinginan
+target tabungan
+pencapaian tabungan
+tren
+```
+
+Minta Gemini memberikan:
+
+1. Analisis kondisi keuangan
+2. Prediksi bulan berikutnya
+3. Kategori yang perlu diperhatikan
+4. Rekomendasi penghematan
+5. Rekomendasi pencapaian target tabungan
+
+Jangan meminta Gemini mengarang angka.
+
+Jika Gemini tidak tersedia:
+
+gunakan rule-based analysis + moving average sebagai fallback.
+
+---
+
+# 36. AI RESULT
+
+Tampilkan hasil AI dalam card:
+
+```text
+AI Financial Analysis
+```
+
+Section:
+
+```text
+Kondisi Keuangan
+Prediksi
+Risiko
+Rekomendasi
+Target Tabungan
+```
+
+Jangan menampilkan hasil AI sebagai satu paragraf panjang saja.
+
+Gunakan UI yang mudah dibaca.
+
+---
+
+# 37. API KEY SECURITY
+
+Karena ini frontend-only:
+
+Jelaskan secara internal bahwa API key di localStorage hanya cocok untuk demo/local usage.
+
+Jangan mengklaim bahwa localStorage API key aman untuk production.
+
+Untuk production seharusnya request Gemini melalui backend/serverless proxy.
+
+Tetapi untuk versi Google AI Studio/local demo, implementasikan sesuai requirement.
+
+---
+
+# 38. RESPONSIVE DESIGN
+
+WAJIB mobile-first.
+
+Aplikasi harus nyaman pada:
+
+### Mobile
+
+```text
+320px
+375px
+390px
+430px
+```
+
+### Tablet
+
+```text
+768px
+```
+
+### Desktop
+
+```text
+1024px+
+```
+
+Jangan sampai:
+
+- chart terpotong
+- card keluar layar
+- tabel merusak layout
+- sidebar menutupi content
+- text overflow
+- button terlalu kecil
+
+Gunakan:
+
+- CSS Grid
+- Flexbox
+- responsive breakpoints
+- overflow handling
+
+---
+
+# 39. MOBILE NAVIGATION
+
+Desktop:
+
+```text
+Sidebar
+```
+
+Mobile:
+
+```text
+Bottom Navigation
+```
+
+atau:
+
+```text
+Hamburger menu
+```
+
+Gunakan Lucide Icons.
+
+Menu:
+
+```text
+Dashboard
+Transaksi
+Akun
+Tabungan
+Analisis
+Optimasi
+Prediksi
+Profil
+```
+
+---
+
+# 40. UI STYLE
+
+Gunakan desain:
+
+- modern
+- clean
+- minimal
+- professional
+- finance dashboard
+- mobile-first
+- tidak terlalu ramai
+
+Gunakan:
+
+- rounded cards
+- subtle shadows
+- consistent spacing
+- typography hierarchy
+- responsive chart cards
+- badges
+- progress bars
+- modal
+- toast notification
+
+Jangan menggunakan terlalu banyak warna.
+
+Gunakan satu warna utama dan warna status seperlunya.
+
+---
+
+# 41. LUCIDE ICONS
+
+Gunakan Lucide React.
+
+Contoh icon:
+
+```text
+LayoutDashboard
+Wallet
+CreditCard
+ArrowUp
+ArrowDown
+TrendingUp
+TrendingDown
+PiggyBank
+Target
+ChartNoAxesCombined
+Upload
+Download
+Plus
+Edit
+Trash2
+Search
+Filter
+Settings
+User
+LogOut
+Sparkles
+Bot
+```
+
+Jangan menggunakan emoji sebagai pengganti icon UI.
+
+---
+
+# 42. RECHARTS
+
+Gunakan Recharts untuk:
+
+- AreaChart
+- BarChart
+- PieChart
+- ResponsiveContainer
+- Tooltip
+- Legend
+- CartesianGrid
+- XAxis
+- YAxis
+
+Chart harus responsive.
+
+Jangan membuat chart dengan data hard-code.
+
+---
+
+# 43. KOMPONEN
+
+Buat komponen reusable seperti:
+
+```text
+DashboardCard
+KpiCard
+ChartCard
+TransactionTable
+TransactionForm
+AccountCard
+SavingsGoalCard
+InsightCard
+PredictionCard
+OptimizationCard
+ImportModal
+AiModal
+Sidebar
+MobileNav
+Header
+FilterBar
+```
+
+Jangan membuat seluruh aplikasi menjadi satu file besar jika tidak diperlukan.
+
+Namun jika environment Google AI Studio mengharuskan single-file app, tetap buat komponen React dalam satu file secara terstruktur.
+
+---
+
+# 44. STATE MANAGEMENT
+
+Gunakan:
+
+```text
+useState
+useEffect
+useMemo
+useContext
+useReducer
+```
+
+sesuai kebutuhan.
+
+Buat context jika diperlukan:
+
+```text
+AuthContext
+FinanceContext
+```
+
+Semua perubahan data harus langsung memperbarui UI.
+
+---
+
+# 45. PERSISTENCE
+
+Setiap perubahan:
+
+- tambah transaksi
+- edit transaksi
+- hapus transaksi
+- tambah akun
+- edit akun
+- hapus akun
+- target tabungan
+- user
+
+harus disimpan ke localStorage/IndexedDB.
+
+Saat browser direfresh:
+
+data tidak hilang.
+
+Saat user login kembali:
+
+data tetap tersedia.
+
+---
+
+# 46. RESET DEMO DATA
+
+Tambahkan opsi:
+
+```text
+Reset Demo Data
+```
+
+Dengan confirmation.
+
+Jika user memilih reset:
+
+data kembali ke INITIAL_TRANSACTIONS.
+
+Jangan menghapus user account secara tidak sengaja.
+
+---
+
+# 47. DASHBOARD LAYOUT
+
+Dashboard desktop:
+
+```text
+Sidebar | Main Content
+```
+
+Main:
+
+```text
+Header
+
+Filter Periode
+
+KPI Grid
+
+Trend Chart
+
+Income vs Expense
+
+Expense Category + Payment Method
+
+Needs vs Wants + Cash vs Digital
+
+Savings Goal
+
+Adaptive Insight
+
+Optimization
+
+Prediction
+
+Recent Transactions
+```
+
+Mobile:
+
+```text
+Header
+Filter
+KPI stacked/grid
+Charts stacked
+Insights stacked
+Recent transactions
+Bottom navigation
+```
+
+---
+
+# 48. RECENT TRANSACTIONS
+
+Dashboard tampilkan beberapa transaksi terbaru.
+
+Kolom mobile:
+
+```text
+Tanggal
+Keterangan
+Nominal
+```
+
+Klik transaksi:
+
+buka detail.
+
+---
+
+# 49. FINANCIAL HEALTH SCORE
+
+Boleh tambahkan fitur:
+
+**Financial Health Score**
+
+Skor 0–100 berdasarkan:
+
+- tabungan
+- pengeluaran
+- kebutuhan vs keinginan
+- saldo
+- konsistensi pemasukan
+- pencapaian target
+
+Jelaskan faktor skor secara singkat.
+
+Jangan membuat skor random.
+
+---
+
+# 50. VALIDASI
+
+Validasi seluruh input.
+
+Transaction:
+
+- tanggal valid
+- nominal valid
+- kategori valid
+- akun valid
+- metode valid
+
+Account:
+
+- nama wajib
+- tipe wajib
+- saldo valid
+
+Savings:
+
+- target valid
+- tanggal valid
+
+Import:
+
+- file extension
+- header
+- nominal
+- tanggal
+
+---
+
+# 51. ERROR HANDLING
+
+Jika error:
+
+Tampilkan toast/alert yang jelas.
+
+Contoh:
+
+```text
+Import gagal.
+Kolom Tanggal tidak ditemukan.
+```
+
+atau:
+
+```text
+Transaksi berhasil ditambahkan.
+```
+
+Jangan hanya menggunakan console.log untuk error yang harus dilihat user.
+
+---
+
+# 52. EMPTY STATE
+
+Jika belum ada data:
+
+Tampilkan:
+
+```text
+Belum ada transaksi.
+
+Tambahkan transaksi pertama untuk mulai melihat analisis keuangan.
+```
+
+Jangan membuat chart kosong yang membingungkan.
+
+---
+
+# 53. LOADING STATE
+
+Untuk:
+
+- import
+- AI request
+- perhitungan berat
+- loading data
+
+gunakan loading indicator.
+
+Contoh:
+
+```text
+Menganalisis data...
+```
+
+---
+
+# 54. ACCESSIBILITY
+
+Gunakan:
+
+- button yang jelas
+- label form
+- aria-label jika diperlukan
+- keyboard-friendly
+- contrast yang cukup
+- focus state
+
+---
+
+# 55. PERFORMANCE
+
+Hindari:
+
+- render berulang yang tidak perlu
+- perhitungan dashboard berulang
+- parsing Excel berkali-kali
+
+Gunakan:
+
+```text
+useMemo
+useCallback
+```
+
+jika memang diperlukan.
+
+Jangan melakukan premature optimization yang membuat kode terlalu rumit.
+
+---
+
+# 56. DATA CALCULATION
+
+Semua KPI harus dihitung dari transaksi.
+
+Contoh:
+
+```javascript
+totalIncome =
+transactions.reduce((sum, t) => sum + t.masuk, 0)
+```
+
+```javascript
+totalExpense =
+transactions.reduce((sum, t) => sum + t.keluar, 0)
+```
+
+```javascript
+balance =
+totalIncome - totalExpense
+```
+
+Jangan memasukkan angka KPI langsung ke JSX.
+
+---
+
+# 57. SALDO TRANSAKSI
+
+Saldo kronologis:
+
+```text
+saldo sebelumnya
++ pemasukan
+- pengeluaran
+```
+
+Urutkan transaksi berdasarkan tanggal.
+
+Hitung saldo secara konsisten.
+
+Jika transaksi diedit/dihapus:
+
+saldo transaksi berikutnya harus dihitung ulang.
+
+---
+
+# 58. ACCOUNT BALANCE
+
+Saldo akun dapat dihitung berdasarkan transaksi:
+
+```text
+saldo awal
++ pemasukan akun
+- pengeluaran akun
+```
+
+Jangan membuat saldo akun dan saldo transaksi menjadi dua sumber kebenaran yang saling bertentangan.
+
+Jika menggunakan saldo awal akun, dokumentasikan dan implementasikan dengan konsisten.
+
+---
+
+# 59. TABUNGAN
+
+Transaksi kategori:
+
+```text
+tabungan
+```
+
+dapat dianggap sebagai alokasi tabungan jika sesuai logika aplikasi.
+
+Tampilkan:
+
+```text
+Target
+Terkumpul
+Kekurangan
+Persentase
+Status
+```
+
+Jangan menganggap semua transaksi positif sebagai tabungan.
+
+---
+
+# 60. IMPORT NORMALIZATION
+
+Header Excel dapat berbeda.
+
+Contoh:
+
+```text
+Tanggal
+tanggal
+TANGGAL
+Date
+```
+
+harus dapat dinormalisasi.
+
+Begitu juga:
+
+```text
+Pemasukan
+Masuk
+Income
+```
+
+dan:
+
+```text
+Pengeluaran
+Keluar
+Expense
+```
+
+Buat fungsi normalisasi header.
+
+---
+
+# 61. IMPORT PREVIEW
+
+Sebelum import:
+
+tampilkan tabel preview:
+
+```text
+Baris
+Tanggal
+Keterangan
+Kategori
+Metode
+Masuk
+Keluar
+Status
+```
+
+Status:
+
+```text
+Valid
+Warning
+Invalid
+```
+
+User dapat melihat error sebelum data masuk.
+
+---
+
+# 62. IMPORT DUPLICATE
+
+Jika transaksi yang sama diimport lagi, jangan langsung membuat duplikat tanpa peringatan.
+
+Buat deteksi sederhana berdasarkan kombinasi:
+
+```text
+tanggal
+keterangan
+masuk
+keluar
+```
+
+Tampilkan:
+
+```text
+12 transaksi ditemukan
+2 transaksi duplikat
+10 transaksi siap diimport
+```
+
+User dapat memilih.
+
+---
+
+# 63. EXPORT
+
+Export:
+
+```text
+CSV
+XLSX
+```
+
+Minimal kolom:
+
+```text
+Tanggal
+Tipe
+Kategori
+Metode
+Akun
+Pemasukan
+Pengeluaran
+Keterangan
+```
+
+---
+
+# 64. ANALISIS PERBANDINGAN BULAN
+
+Jika data tersedia:
+
+bandingkan periode saat ini dengan periode sebelumnya.
+
+Contoh:
+
+```text
+Pengeluaran naik 12.5%
+```
+
+atau:
+
+```text
+Pengeluaran turun 8.2%
+```
+
+Jika tidak ada periode pembanding:
+
+jangan menampilkan perbandingan palsu.
+
+---
+
+# 65. PREDIKSI MOVING AVERAGE
+
+Gunakan:
+
+```text
+MA3 =
+(period1 + period2 + period3) / 3
+```
+
+Terapkan untuk:
+
+- income
+- expense
+
+Saldo prediksi:
+
+```text
+predictedIncome - predictedExpense
+```
+
+Estimasi tabungan:
+
+gunakan surplus yang diprediksi secara masuk akal.
+
+---
+
+# 66. OPTIMIZATION ENGINE
+
+Gunakan logika:
+
+```text
+availableForSpending =
+income - savingsTarget
+```
+
+Kemudian:
+
+```text
+remainingSpendingLimit =
+availableForSpending - actualExpense
+```
+
+Jika ada sisa hari:
+
+```text
+dailySpendingLimit =
+remainingSpendingLimit / remainingDays
+```
+
+Jika nilai negatif:
+
+```text
+0
+```
+
+dan tampilkan warning.
+
+Jangan membuat angka random.
+
+---
+
+# 67. ADAPTIVE RULE ENGINE
+
+Buat fungsi seperti:
+
+```javascript
+generateFinancialInsights(data)
+```
+
+Rules minimal:
+
+```text
+kategori terbesar
+expense trend
+income trend
+needs ratio
+wants ratio
+savings achievement
+payment method dominance
+cash/digital balance
+```
+
+Output array:
+
+```javascript
+[
+  {
+    type: 'warning',
+    title: 'Pengeluaran tinggi',
+    message: '...'
+  }
+]
+```
+
+---
+
+# 68. GEMINI FALLBACK
+
+Jika:
+
+- API key tidak ada
+- request gagal
+- internet tidak tersedia
+
+maka aplikasi tetap berfungsi.
+
+Gunakan:
+
+```text
+Moving Average
+Rule-based Analysis
+Optimization Engine
+```
+
+sebagai fallback.
+
+Aplikasi tidak boleh menjadi blank/error hanya karena Gemini tidak tersedia.
+
+---
+
+# 69. DEMO MODE
+
+Saat pertama kali dijalankan:
+
+Jika belum ada data:
+
+load INITIAL_TRANSACTIONS.
+
+Buat demo user jika diperlukan.
+
+Contoh:
+
+```text
+demo@financeinsight.local
+```
+
+Namun jangan memaksa demo account jika sistem register sudah tersedia.
+
+---
+
+# 70. ROUTING
+
+Gunakan React Router jika tersedia.
+
+Route:
+
+```text
+/login
+/register
+/dashboard
+/transactions
+/transactions/new
+/transactions/:id
+/accounts
+/savings
+/analysis
+/optimization
+/prediction
+/profile
+```
+
+Jika environment tidak membutuhkan React Router, gunakan state-based routing yang rapi.
+
+Tetapi prefer React Router untuk aplikasi lengkap.
+
+---
+
+# 71. PROTECTED ROUTES
+
+Halaman:
+
+```text
+/dashboard
+/transactions
+/accounts
+/savings
+/analysis
+/optimization
+/prediction
+/profile
+```
+
+hanya dapat dibuka setelah login.
+
+Jika belum login:
+
+redirect ke:
+
+```text
+/login
+```
+
+---
+
+# 72. PROFILE
+
+User dapat mengubah:
+
+```text
+Nama
+Email
+Password
+```
+
+Tidak boleh mengubah ID.
+
+---
+
+# 73. NOTIFICATION
+
+Gunakan toast:
+
+```text
+Transaksi berhasil ditambahkan
+Transaksi berhasil diubah
+Transaksi berhasil dihapus
+Import berhasil
+Export berhasil
+Target berhasil diperbarui
+API key tersimpan
+```
+
+---
+
+# 74. CONFIRMATION
+
+Untuk tindakan destruktif:
+
+```text
+Hapus transaksi?
+```
+
+```text
+Reset demo data?
+```
+
+```text
+Hapus akun?
+```
+
+harus ada confirmation.
+
+---
+
+# 75. DARK MODE
+
+Boleh tambahkan.
+
+Jika ditambahkan:
+
+- simpan preference di localStorage
+- gunakan Tailwind dark mode
+- jangan merusak chart
+- tetap readable
+
+---
+
+# 76. FILE STRUCTURE
+
+Jika multi-file didukung:
+
+```text
+src/
+├── components/
+│   ├── Sidebar.jsx
+│   ├── MobileNav.jsx
+│   ├── Header.jsx
+│   ├── KpiCard.jsx
+│   ├── ChartCard.jsx
+│   ├── TransactionTable.jsx
+│   ├── TransactionForm.jsx
+│   ├── AccountCard.jsx
+│   ├── SavingsGoalCard.jsx
+│   ├── InsightCard.jsx
+│   ├── PredictionCard.jsx
+│   ├── OptimizationCard.jsx
+│   └── AiModal.jsx
+│
+├── pages/
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   ├── Dashboard.jsx
+│   ├── Transactions.jsx
+│   ├── Accounts.jsx
+│   ├── Savings.jsx
+│   ├── Analysis.jsx
+│   ├── Optimization.jsx
+│   ├── Prediction.jsx
+│   └── Profile.jsx
+│
+├── services/
+│   ├── storageService.js
+│   ├── financeService.js
+│   ├── importService.js
+│   └── aiService.js
+│
+├── utils/
+│   ├── formatMoney.js
+│   ├── calculations.js
+│   ├── insights.js
+│   ├── prediction.js
+│   └── optimization.js
+│
+├── context/
+│   ├── AuthContext.jsx
+│   └── FinanceContext.jsx
+│
+├── data/
+│   └── initialData.js
+│
+├── App.jsx
+├── main.jsx
+└── index.css
+```
+
+Jika environment AI Studio memerlukan struktur berbeda, sesuaikan.
+
+---
+
+# 77. SINGLE-FILE FALLBACK
+
+Jika Google AI Studio meminta aplikasi dalam satu file:
+
+Gunakan satu `App.jsx` yang berisi seluruh komponen React secara terstruktur.
+
+Tetap pisahkan logic dengan fungsi dan komponen.
+
+Jangan membuat satu fungsi `App` berisi ribuan baris tanpa struktur.
+
+---
+
+# 78. DEPENDENCIES
+
+Gunakan dependency yang diperlukan:
+
+```text
+react
+react-dom
+react-router-dom
+lucide-react
+recharts
+xlsx
+```
+
+Jika Tailwind tersedia gunakan Tailwind CSS.
+
+Jangan menambahkan dependency yang tidak diperlukan.
+
+---
+
+# 79. GOOGLE AI STUDIO COMPATIBILITY
+
+Pastikan kode dapat dijalankan di environment Google AI Studio.
+
+Jangan menggunakan API browser yang tidak tersedia.
+
+Jangan menggunakan filesystem server.
+
+Jangan menggunakan PHP.
+
+Jangan menggunakan MySQL.
+
+Jangan menggunakan Laravel.
+
+Jangan menggunakan backend yang tidak diminta.
+
+---
+
+# 80. INTERACTIVE PREVIEW
+
+Sangat penting:
+
+**Jalankan dan render aplikasi sebagai aplikasi web interaktif jika environment Google AI Studio mendukung preview.**
+
+Jangan hanya memberikan kode dalam bentuk teks.
+
+Pastikan saya dapat:
+
+- klik menu
+- login
+- register
+- tambah transaksi
+- edit transaksi
+- hapus transaksi
+- melihat chart
+- filter periode
+- import Excel
+- export Excel
+- membuka analisis
+- membuka optimasi
+- membuka prediksi
+- membuka AI
+- mengubah akun
+- mengubah target
+
+langsung dari preview.
+
+---
+
+# 81. JIKA ADA ERROR SAAT BUILD
+
+Jangan berhenti.
+
+Periksa:
+
+- import
+- dependency
+- syntax
+- JSX
+- routing
+- state
+- localStorage
+- Chart data
+- Recharts
+- SheetJS
+- responsive layout
+
+Perbaiki error sampai aplikasi dapat dijalankan.
+
+Jangan memberikan solusi berupa:
+
+```text
+coba perbaiki sendiri
+```
+
+atau:
+
+```text
+tinggal install package
+```
+
+Jika dependency memang diperlukan, tambahkan dependency tersebut dan lanjutkan implementasi.
+
+---
+
+# 82. TESTING WAJIB
+
+Test:
+
+### Authentication
+
+- register
+- login
+- logout
+- protected route
+
+### Transactions
+
+- tambah
+- edit
+- hapus
+- search
+- filter
+- sort
+- pagination
+
+### Accounts
+
+- tambah
+- edit
+- hapus
+- saldo
+
+### Savings
+
+- tambah
+- progress
+- target
+
+### Dashboard
+
+- KPI
+- chart
+- filter
+
+### Import
+
+- XLSX
+- CSV
+- TOTAL row
+- currency normalization
+- invalid data
+- duplicate
+
+### Export
+
+- CSV
+- XLSX
+
+### BI
+
+- adaptive insight
+- comparison
+- optimization
+- prediction
+
+### AI
+
+- API key
+- AI request
+- AI response
+- fallback
+
+### Responsive
+
+- mobile
+- tablet
+- desktop
+
+---
+
+# 83. DATA INTEGRITY
+
+Pastikan:
+
+```text
+income >= 0
+expense >= 0
+balance = income - expense
+```
+
+Tidak boleh ada:
+
+```text
+NaN
+undefined
+Infinity
+```
+
+di dashboard.
+
+Tangani data kosong.
+
+---
+
+# 84. ZERO DATA STATE
+
+Jika user belum mempunyai transaksi:
+
+```text
+Total Pemasukan = 0
+Total Pengeluaran = 0
+Saldo = 0
+```
+
+Chart menampilkan empty state yang jelas.
+
+Jangan menyebabkan error.
+
+---
+
+# 85. NO HARD-CODE DASHBOARD
+
+Sangat penting.
+
+Jangan melakukan:
+
+```javascript
+const totalIncome = 2055000;
+```
+
+untuk dashboard.
+
+Gunakan:
+
+```javascript
+const totalIncome = filteredTransactions.reduce(...)
+```
+
+Data awal boleh hard-code sebagai:
+
+```javascript
+INITIAL_TRANSACTIONS
+```
+
+tetapi semua analisis harus dihitung dari data tersebut.
+
+---
+
+# 86. DATA FLOW
+
+Pastikan arsitektur:
+
+```text
+User
+↓
+React UI
+↓
+State / Context
+↓
+Finance Service
+↓
+localStorage / IndexedDB
+↓
+Calculated BI Data
+↓
+Dashboard
+↓
+Recharts
+```
+
+Untuk AI:
+
+```text
+Dashboard data
+↓
+AI summary
+↓
+Gemini API
+↓
+AI result
+↓
+AI Insight UI
+```
+
+Fallback:
+
+```text
+Dashboard data
+↓
+Rule Engine
+↓
+Moving Average
+↓
+Optimization
+```
+
+---
+
+# 87. FINAL UI
+
+Dashboard harus mempunyai:
+
+```text
+Finance Insight
+
+Good evening, [User]
+
+[Period Filter]
+
+[Uang Masuk]
+[Uang Keluar]
+[Sisa Saldo]
+[Cash]
+[Digital]
+[Tabungan]
+[Target]
+[Transaksi]
+
+Tren Keuangan
+Area Chart
+
+Pemasukan vs Pengeluaran
+Bar Chart
+
+Pengeluaran per Kategori
+Horizontal Bar
+
+Metode Pembayaran
+Donut
+
+Kebutuhan vs Keinginan
+Donut
+
+Cash vs Digital
+Chart
+
+Adaptive Insights
+
+Optimization
+
+Prediction
+
+AI Financial Analysis
+
+Recent Transactions
+```
+
+---
+
+# 88. MOBILE UI
+
+Pada mobile:
+
+Jangan menampilkan 8 KPI dalam satu baris.
+
+Gunakan:
+
+```text
+2 kolom
+```
+
+atau:
+
+```text
+1 kolom
+```
+
+sesuai lebar layar.
+
+Chart:
+
+```text
+width: 100%
+```
+
+Gunakan `ResponsiveContainer`.
+
+Table:
+
+```text
+overflow-x: auto
+```
+
+Navigation:
+
+```text
+bottom navigation
+```
+
+atau hamburger.
+
+---
+
+# 89. PRESENTATION QUALITY
+
+Aplikasi harus layak dipresentasikan sebagai proyek:
+
+**Kecerdasan Bisnis / Business Intelligence**
+
+Tonjolkan:
+
+```text
+Descriptive Analytics
+Diagnostic Analytics
+Predictive Analytics
+Prescriptive Analytics
+```
+
+Pemetaan:
+
+### Descriptive
+
+Dashboard KPI + grafik.
+
+### Diagnostic
+
+Analisis kategori + kebutuhan/keinginan + metode pembayaran.
+
+### Predictive
+
+Moving Average + Gemini AI.
+
+### Prescriptive
+
+Optimization Engine + rekomendasi.
+
+Ini penting agar aplikasi tidak terlihat hanya sebagai aplikasi CRUD.
+
+---
+
+# 90. BUSINESS INTELLIGENCE SUMMARY
+
+Buat halaman atau section:
+
+**Business Intelligence Overview**
+
+Tampilkan:
+
+```text
+Descriptive Analytics
+Diagnostic Analytics
+Predictive Analytics
+Prescriptive Analytics
+```
+
+dengan penjelasan singkat berdasarkan data user.
+
+---
+
+# 91. FINAL VERIFICATION
+
+Sebelum menyatakan selesai, periksa:
+
+- Semua route bekerja
+- Semua button bekerja
+- Semua form bekerja
+- Data tersimpan
+- Refresh tidak menghapus data
+- Login bekerja
+- Logout bekerja
+- User isolation bekerja
+- CRUD bekerja
+- Import bekerja
+- Export bekerja
+- Chart bekerja
+- Filter bekerja
+- Insight dinamis
+- Prediction bekerja
+- Optimization bekerja
+- Gemini fallback bekerja
+- Responsive bekerja
+- Tidak ada hard-coded KPI
+- Tidak ada NaN
+- Tidak ada console error
+- Tidak ada broken import
+- Tidak ada halaman kosong
+
+Jika menemukan error, perbaiki sebelum selesai.
+
+---
+
+# 92. HASIL AKHIR
+
+Saya ingin hasil akhirnya berupa aplikasi:
+
+**Finance Insight**
+
+yang mempunyai:
+
+- React JS
+- Tailwind CSS
+- Lucide React
+- Recharts
+- SheetJS
+- local persistence
+- Authentication
+- Multi-user local
+- CRUD transaksi
+- Account management
+- Cash balance
+- Digital balance
+- Savings goals
+- Dashboard BI
+- Descriptive analytics
+- Diagnostic analytics
+- Predictive analytics
+- Prescriptive analytics
+- Adaptive insights
+- Optimization
+- Moving Average prediction
+- Gemini AI
+- Import Excel
+- Import CSV
+- Export Excel
+- Export CSV
+- Responsive mobile
+- Responsive tablet
+- Responsive desktop
+- Modern UI
+- Error handling
+- Validation
+- Empty states
+- Loading states
+- Demo data
+- Reset demo
+- Production-ready architecture direction
+
+---
+
+# 93. PRIORITAS IMPLEMENTASI
+
+Jika harus memilih prioritas karena keterbatasan environment, urutannya:
+
+1. Aplikasi runnable
+2. Authentication
+3. Persistence
+4. CRUD
+5. Dashboard
+6. Chart
+7. Filter
+8. Account
+9. Savings
+10. BI analysis
+11. Optimization
+12. Prediction
+13. Import
+14. Export
+15. Gemini AI
+16. Responsive refinement
+17. Security refinement
+18. Testing
+
+Tetapi jangan sengaja menghilangkan fitur.
+
+---
+
+# 94. ATURAN FINAL
+
+Jangan berhenti setelah membuat UI.
+
+Jangan membuat mockup.
+
+Jangan membuat data palsu untuk menggantikan perhitungan.
+
+Jangan membuat chart statis.
+
+Jangan membuat tombol palsu.
+
+Jangan membuat fitur yang hanya terlihat bekerja.
+
+Semua fitur utama harus benar-benar terhubung dengan state/data.
+
+Gunakan data awal yang diberikan.
+
+Gunakan React JS.
+
+Gunakan Tailwind CSS.
+
+Gunakan Lucide Icons.
+
+Gunakan Recharts.
+
+Gunakan SheetJS.
+
+Gunakan Gemini AI jika API key tersedia.
+
+Gunakan localStorage/IndexedDB untuk persistence.
+
+Aplikasi harus mobile-first.
+
+Aplikasi harus responsive.
+
+Aplikasi harus dapat digunakan langsung.
+
+**Jalankan, render, dan uji aplikasi secara langsung di preview Google AI Studio jika environment mendukungnya.**
+
+Jika terdapat error selama implementasi, perbaiki.
+
+Jangan berhenti untuk meminta konfirmasi.
+
+**Kerjakan seluruh aplikasi dari awal sampai selesai.**
