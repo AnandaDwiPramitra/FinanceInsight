@@ -1,17 +1,14 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import {
-  DEMO_USER_EMAIL,
-  DEMO_USER_PASSWORD,
   ensureDemoUserExists,
   getCurrentUser,
   getStoredTheme,
   getUsers,
-  hashPassword,
   saveStoredTheme,
-  saveUsers,
   seedUserFinanceData,
   setCurrentUser,
 } from '../services/storageService';
+import { supabaseLogout, supabaseLogin, supabaseRegister } from '../services/supabaseService';
 import { User } from '../types/finance';
 
 interface AuthContextValue {
@@ -26,7 +23,7 @@ interface AuthContextValue {
     email: string;
     password: string;
   }) => Promise<{ ok: boolean; error?: string }>;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateProfile: (params: {
     name: string;
     email: string;
@@ -59,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (mounted) {
         if (storedUser) {
           const allUsers = getUsers();
-          const verified = allUsers.find((u) => u.id === storedUser.id);
+          const verified = allUsers.find((u) => u.id === storedUser.id) || storedUser;
           if (verified) {
             setUser(verified);
             seedUserFinanceData(verified.id, Boolean(verified.isDemo));
@@ -80,74 +77,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail || !password) {
-      return { ok: false, error: 'Email dan password wajib diisi.' };
+    const res = await supabaseLogin(email, password);
+    if (!res.ok || !res.user) {
+      return { ok: false, error: res.error || 'Gagal login.' };
     }
 
-    const users = await ensureDemoUserExists();
-    const target = users.find((u) => u.email.toLowerCase() === normalizedEmail);
-    if (!target) {
-      return { ok: false, error: 'Email belum terdaftar. Silakan register terlebih dahulu.' };
-    }
-
-    const inputHash = await hashPassword(password);
-    if (inputHash !== target.passwordHash) {
-      return { ok: false, error: 'Password salah.' };
-    }
-
-    seedUserFinanceData(target.id, Boolean(target.isDemo));
-    setCurrentUser(target);
-    setUser(target);
+    seedUserFinanceData(res.user.id, Boolean(res.user.isDemo));
+    setUser(res.user);
     return { ok: true };
   }, []);
 
   const loginDemo = useCallback(async () => {
-    return login(DEMO_USER_EMAIL, DEMO_USER_PASSWORD);
-  }, [login]);
+    const users = await ensureDemoUserExists();
+    const demo = users.find((u) => u.isDemo) || users[0];
+    if (!demo) return { ok: false, error: 'Akun demo tidak ditemukan.' };
+    setCurrentUser(demo);
+    seedUserFinanceData(demo.id, true);
+    setUser(demo);
+    return { ok: true };
+  }, []);
 
   const register = useCallback(
     async (params: { name: string; email: string; password: string }) => {
-      const name = params.name.trim();
-      const email = params.email.trim().toLowerCase();
-      const password = params.password;
-
-      if (!name) return { ok: false, error: 'Nama wajib diisi.' };
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        return { ok: false, error: 'Format email tidak valid.' };
-      }
-      if (password.length < 6) {
-        return { ok: false, error: 'Password minimal 6 karakter.' };
+      const res = await supabaseRegister(params);
+      if (!res.ok || !res.user) {
+        return { ok: false, error: res.error || 'Gagal mendaftar.' };
       }
 
-      const users = await ensureDemoUserExists();
-      if (users.some((u) => u.email.toLowerCase() === email)) {
-        return { ok: false, error: 'Email sudah terdaftar. Gunakan email lain.' };
-      }
-
-      const passwordHash = await hashPassword(password);
-      const newUser: User = {
-        id: `user-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-        name,
-        email,
-        passwordHash,
-        createdAt: new Date().toISOString(),
-        isDemo: false,
-      };
-
-      const nextUsers = [...users, newUser];
-      saveUsers(nextUsers);
-      // User baru mulai dengan akun & target default bersih (0 transaksi agar user terisolasi penuh)
-      seedUserFinanceData(newUser.id, false);
-      setCurrentUser(newUser);
-      setUser(newUser);
+      seedUserFinanceData(res.user.id, false);
+      setUser(res.user);
       return { ok: true };
     },
     []
   );
 
-  const logout = useCallback(() => {
-    setCurrentUser(null);
+  const logout = useCallback(async () => {
+    await supabaseLogout();
     setUser(null);
   }, []);
 
@@ -161,29 +126,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { ok: false, error: 'Format email tidak valid.' };
       }
 
-      const users = getUsers();
-      const duplicate = users.find((u) => u.email.toLowerCase() === email && u.id !== user.id);
-      if (duplicate) {
-        return { ok: false, error: 'Email sudah digunakan oleh akun lain.' };
-      }
-
-      let nextPasswordHash = user.passwordHash;
-      if (params.newPassword && params.newPassword.length > 0) {
-        if (params.newPassword.length < 6) {
-          return { ok: false, error: 'Password baru minimal 6 karakter.' };
-        }
-        nextPasswordHash = await hashPassword(params.newPassword);
-      }
-
       const updatedUser: User = {
         ...user,
         name,
         email,
-        passwordHash: nextPasswordHash,
       };
 
-      const nextUsers = users.map((u) => (u.id === user.id ? updatedUser : u));
-      saveUsers(nextUsers);
       setCurrentUser(updatedUser);
       setUser(updatedUser);
       return { ok: true };

@@ -3,17 +3,19 @@ import { buildAccountsFromTransactions } from '../services/importService';
 import {
   clearAllUserTransactionData,
   getLastImportSummary,
-  getUserAccounts,
   getUserCategories,
-  getUserSavingsGoals,
-  getUserTransactions,
   resetUserDemoData,
   saveLastImportSummary,
-  saveUserAccounts,
   saveUserCategories,
-  saveUserSavingsGoals,
-  saveUserTransactions,
 } from '../services/storageService';
+import {
+  fetchUserTransactionsFromSupabase,
+  saveUserTransactionsToSupabase,
+  fetchUserAccountsFromSupabase,
+  saveUserAccountsToSupabase,
+  fetchUserSavingsGoalsFromSupabase,
+  saveUserSavingsGoalsToSupabase,
+} from '../services/supabaseService';
 import {
   Account,
   AccountType,
@@ -119,6 +121,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [selectedPeriod, setSelectedPeriod] = useState<string>('all');
 
   useEffect(() => {
+    let mounted = true;
     if (!user) {
       setTransactions([]);
       setAccounts([]);
@@ -129,44 +132,54 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return;
     }
 
-    const rawTx = getUserTransactions(user.id);
-    const userTx = rawTx.map((t) => {
-      if (t.tipe === 'Pemasukan' && String(t.jenisPengeluaran || '').toLowerCase().trim() === 'tidak berlaku') {
-        return { ...t, jenisPengeluaran: 'Pemasukan' as const };
-      }
-      return t;
-    });
-    const rawAcc = getUserAccounts(user.id);
-    let userAcc = rawAcc;
-    if (rawAcc.length > 0 && !rawAcc.some((a) => a.name.toLowerCase().replace(/\s+/g, '') === 'seabank')) {
-      userAcc = [
-        ...rawAcc,
-        {
-          id: 'acc-seabank',
-          name: 'SeaBank',
-          type: 'Bank',
-          initialBalance: 0,
-          note: 'Rekening tabungan SeaBank',
-        },
-      ];
-      saveUserAccounts(user.id, userAcc);
-    }
-    const userGoals = getUserSavingsGoals(user.id);
-    const userCats = getUserCategories(user.id);
-    const userImportSummary = getLastImportSummary(user.id);
+    (async () => {
+      const rawTx = await fetchUserTransactionsFromSupabase(user.id);
+      if (!mounted) return;
 
-    setTransactions(userTx);
-    setAccounts(userAcc);
-    setSavingsGoals(userGoals);
-    setCategories(userCats);
-    setLastImportSummary(userImportSummary);
-    setSelectedPeriod('all');
+      const userTx = rawTx.map((t) => {
+        if (t.tipe === 'Pemasukan' && String(t.jenisPengeluaran || '').toLowerCase().trim() === 'tidak berlaku') {
+          return { ...t, jenisPengeluaran: 'Pemasukan' as const };
+        }
+        return t;
+      });
+
+      const rawAcc = await fetchUserAccountsFromSupabase(user.id);
+      let userAcc = rawAcc;
+      if (rawAcc.length > 0 && !rawAcc.some((a) => a.name.toLowerCase().replace(/\s+/g, '') === 'seabank')) {
+        userAcc = [
+          ...rawAcc,
+          {
+            id: 'acc-seabank',
+            name: 'SeaBank',
+            type: 'Bank',
+            initialBalance: 0,
+            note: 'Rekening tabungan SeaBank',
+          },
+        ];
+        await saveUserAccountsToSupabase(user.id, userAcc);
+      }
+
+      const userGoals = await fetchUserSavingsGoalsFromSupabase(user.id);
+      const userCats = getUserCategories(user.id);
+      const userImportSummary = getLastImportSummary(user.id);
+
+      setTransactions(userTx);
+      setAccounts(userAcc);
+      setSavingsGoals(userGoals);
+      setCategories(userCats);
+      setLastImportSummary(userImportSummary);
+      setSelectedPeriod('all');
+    })();
+
+    return () => {
+      mounted = false;
+    };
   }, [user]);
 
   const persistTransactions = useCallback(
     (next: Transaction[]) => {
       setTransactions(next);
-      if (user) saveUserTransactions(user.id, next);
+      if (user) saveUserTransactionsToSupabase(user.id, next);
     },
     [user]
   );
@@ -174,7 +187,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const persistAccounts = useCallback(
     (next: Account[]) => {
       setAccounts(next);
-      if (user) saveUserAccounts(user.id, next);
+      if (user) saveUserAccountsToSupabase(user.id, next);
     },
     [user]
   );
@@ -182,7 +195,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const persistSavingsGoals = useCallback(
     (next: SavingsGoal[]) => {
       setSavingsGoals(next);
-      if (user) saveUserSavingsGoals(user.id, next);
+      if (user) saveUserSavingsGoalsToSupabase(user.id, next);
     },
     [user]
   );
